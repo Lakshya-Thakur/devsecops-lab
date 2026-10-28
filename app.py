@@ -2,20 +2,21 @@ import os
 import subprocess
 import hashlib
 
-# Vulnerability 1: Hardcoded Password
-ADMIN_PASSWORD = "SuperSecretPassword123!"
+# Fix 1: Use environment variables instead of hardcoding
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
 def run_command(user_input):
-    # Vulnerability 2: Command Injection
-    # Passing unsanitized input directly to the shell
-    subprocess.call(user_input, shell=True)
+    # Fix 2: Avoid shell=True and sanitize input
+    if not user_input.isalnum():
+        print("Invalid input detected.")
+        return
+    subprocess.call(["echo", user_input]) 
 
 def hash_password(password):
-    # Vulnerability 3: Weak Hashing Algorithm (MD5)
-    return hashlib.md5(password.encode()).hexdigest()
+    # Fix 3: Use a strong hashing algorithm (SHA-256)
+    return hashlib.sha256(password.encode()).hexdigest()
 
 if __name__ == "__main__":
     print("Application started.")
-    # Simulating a user input that could be malicious
     user_cmd = input("Enter a command to run: ")
     run_command(user_cmd)
